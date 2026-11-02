@@ -1,0 +1,41 @@
+[build-system]
+requires = ["scikit-build-core>=0.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "unitree-actuator-sdk"
+version = "0.1.0"
+description = "Python bindings for Unitree GO-M8010-6, A1, and B1 actuator motors"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+classifiers = [
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+Repository = "https://github.com/krish-suresh/unitree_actuator_sdk"
+Upstream = "https://github.com/unitreerobotics/unitree_actuator_sdk"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+wheel.packages = []
+wheel.license-files = ["LICENSE", "thirdparty/pybind11/LICENSE"]
+build.targets = ["unitree_actuator_sdk"]
+sdist.exclude = [
+    "build/**",
+    "build-*/**",
+    "dist/**",
+    "docs/**",
+    "motor_tools/**",
+    "lib/unitree_actuator_sdk*.so",
+]
+
+[tool.scikit-build.cmake.define]
+UNITREE_BUILD_EXAMPLES = "OFF"
+BUILD_TESTING = "OFF"

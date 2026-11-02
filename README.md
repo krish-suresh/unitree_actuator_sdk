@@ -12,6 +12,58 @@ gcc >= 7.5.0 (for Arm platform)
 
 run gcc --version  command to check your gcc version
 
+### Install in another Python project with uv
+
+The Python distribution is named `unitree-actuator-sdk`; import it as
+`unitree_actuator_sdk`. It builds an extension for the consuming project's
+Python and includes the matching native motor library. Installation supports
+Linux with glibc on x86-64 or ARM64; Python 3.12 and 3.13 are tested.
+A C++14 compiler and matching Python development headers are required.
+The build backend supplies CMake and Ninja when needed.
+
+From your other uv project:
+
+```bash
+uv add "unitree-actuator-sdk @ git+https://github.com/krish-suresh/unitree_actuator_sdk.git"
+uv run python -c "from unitree_actuator_sdk import MotorCmd; print(MotorCmd())"
+```
+
+uv records the resolved Git commit in that project's lockfile. To select
+a particular commit, add `--rev <commit>` to `uv add`. You can also install
+from a local checkout:
+
+```bash
+uv add /absolute/path/to/unitree_actuator_sdk
+```
+
+For an existing virtual environment without a uv project, use
+`uv pip install /absolute/path/to/unitree_actuator_sdk` instead. Installed
+packages need no `sys.path` changes or `LD_LIBRARY_PATH` settings.
+
+### Build Python distributions
+
+From this repository, build a source distribution and a wheel:
+
+```bash
+uv build --python 3.13
+```
+
+The artifacts are written to `dist/`. The wheel includes only the selected
+architecture's native SDK library and the newly compiled Python extension.
+Wheels are specific to the build's Python version, Linux architecture, and
+system C/C++ runtime; build from source on the destination machine when in doubt.
+
+To verify the installed package in a separate environment without hardware:
+
+```bash
+uv venv --python 3.13 /tmp/unitree-sdk-check
+uv pip install --python /tmp/unitree-sdk-check/bin/python \
+  dist/unitree_actuator_sdk-0.1.0-cp313-cp313-linux_x86_64.whl
+/tmp/unitree-sdk-check/bin/python -I tests/test_installed_package.py
+```
+
+Use the actual wheel filename from `dist/` for other Python versions or ARM64.
+
 ### Build
 Requires CMake 3.18 or newer, a C++14 compiler, and Python 3.7 or newer
 with matching development headers. The bundled pybind11 2.13.6 supports
