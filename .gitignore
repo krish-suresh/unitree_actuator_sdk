@@ -1,1 +1,5 @@
 build/
+build-*/
+.venv*/
+__pycache__/
+lib/unitree_actuator_sdk.cpython-*.so

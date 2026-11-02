@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.18)
 project(unitree_actuator_sdk)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -29,8 +29,19 @@ target_link_libraries(example_goM8010_6_motor ${EXTRA_LIBS})
 add_executable(changeID example/changeID.cpp)
 target_link_libraries(changeID ${EXTRA_LIBS})
 
-set(LIBRARY_OUTPUT_PATH "../lib")
+find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development.Module)
+set(PYBIND11_FINDPYTHON ON)
+
+set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 add_subdirectory(thirdparty/pybind11)
 pybind11_add_module(unitree_actuator_sdk thirdparty/python_wrapper/wrapper.cpp)
 target_link_libraries(unitree_actuator_sdk PRIVATE ${EXTRA_LIBS})
 set_target_properties(unitree_actuator_sdk PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
+
+include(CTest)
+if(BUILD_TESTING)
+    add_test(NAME python_bindings
+        COMMAND "${CMAKE_COMMAND}" -E env
+            "PYTHONPATH=$<TARGET_FILE_DIR:unitree_actuator_sdk>"
+            "${Python_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_python_bindings.py")
+endif()
